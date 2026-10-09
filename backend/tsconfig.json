@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "rootDir": "./src", // Location of source files,
+        "outDir": "./dist", //Location of the compiles JS 
+        "module": "nodenext", // output format
+        "target": "es2025", // JS version to compile to
+        "esModuleInterop": true, //Allows `import x from y` syntax
+        "strict": true, // Enables typescript strict type-checking
+        "skipLibCheck": true, // Skips type-checking for .d.ts files
+        "moduleResolution": "nodenext", // How TS finds modules (node_modules lookup)
+        "resolveJsonModule": true, // Allows importing from .json files
+        "forceConsistentCasingInFileNames": true, // Prevents case-sensitivity bugs
+        "rewriteRelativeImportExtensions": true,
+        "allowImportingTsExtensions": true
+    },
+    "include": ["src/**/*.ts"], //Which files to compile
+    "exclude": ["node_modules"] // Which files to ignore
+}

@@ -148,4 +148,14 @@ export const listing_images_relations = relations(
     }),
 );
 
- 
+// Type interfaces for the database tables
+
+export type User = typeof users.$inferSelect;
+export type newUser = typeof users.$inferInsert;
+
+export type listing = typeof listings.$inferSelect;
+export type newListing = typeof listings.$inferInsert;
+
+export type make = typeof makes.$inferSelect;
+export type model = typeof models.$inferSelect;
+export type vehicle = typeof vehicles.$inferSelect;

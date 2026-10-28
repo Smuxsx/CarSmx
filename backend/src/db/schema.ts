@@ -41,20 +41,28 @@ export const fuelTypeEnum = pgEnum("fuel_type_enum", [
   "other",
 ]); 
 
+export const statesEnum = pgEnum('us_states', [
+  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 
+  'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 
+  'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 
+  'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 
+  'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+]);
+
 export const users = pgTable("users", {
     id: text("id").primaryKey(), // This will be a text and not uuid since we are going to be using clerk id
     first_name: text("first_name").notNull(),
     last_name: text("last_name").notNull(),
     email: text("email").notNull().unique(),
     phone: text("phone").unique(),
-    image_url: text("image_url"),
+    image_url: text("image_url").default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"),
     created_at: timestamp("created_at", { mode: "date"}).notNull().defaultNow(),
     updated_at: timestamp("last_updated", {mode: "date"}).notNull().defaultNow().$onUpdate(() => new Date())
 })
 
 export const makes = pgTable("makes", {
     id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-    name: text("name").notNull(),
+    name: text("name").notNull().unique(),
     is_active: boolean("is_active").notNull().default(true)
 })
 
@@ -92,10 +100,10 @@ export const listings = pgTable("listings", {
     transmission: transmissionEnum("transmission").notNull(),
     fuel_type: fuelTypeEnum("fuel_type").notNull(),
     city: text("city").notNull(),
-    state: text("state").notNull(),
+    state: statesEnum("state").notNull(),
     is_active: boolean("is_active").notNull().default(true),
     created_at: timestamp("created_at", { mode: "date"}).notNull().defaultNow(),
-    updated_at: timestamp("last_updated", {mode: "date"}).notNull().defaultNow().$onUpdate(() => new Date())
+    updated_at: timestamp("updated_at", {mode: "date"}).notNull().defaultNow().$onUpdate(() => new Date())
 
 }, (table) => [
     check("listings_vin_length", sql`char_length(${table.vin}) = 17`),
@@ -105,7 +113,7 @@ export const listings = pgTable("listings", {
 
 export const listing_images = pgTable("listing_images", { 
     id: uuid("id").defaultRandom().primaryKey(),
-    imageUrl: text("image_url").notNull(),
+    image_url: text("image_url").notNull(),
     position: integer("position").notNull(),
     is_primary: boolean("is_primary").notNull().default(false),
     listing_id: uuid("listing_id")
@@ -126,16 +134,16 @@ export const listing_relations = relations(listings, ({ many, one }) => ({
 }))
 
 export const makes_relations = relations(makes, ({ many }) => ({
-    models: many(models),
+    model: many(models),
 }))
 
 export const models_relations = relations(models, ({ many, one }) => ({
     vehicles: many(vehicles),
-    makes: one(makes, {fields: [models.make_id], references: [makes.id]})
+    make: one(makes, {fields: [models.make_id], references: [makes.id]})
 }))
 
 export const vehicles_relations = relations(vehicles, ({ one }) => ({
-    models: one(models, {fields: [vehicles.model_id], references: [models.id]}),
+    model: one(models, {fields: [vehicles.model_id], references: [models.id]}),
 }))
 
 export const listing_images_relations = relations(
